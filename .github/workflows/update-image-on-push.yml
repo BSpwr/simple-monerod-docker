@@ -34,12 +34,6 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - 
-        name: Login to DockerHub
-        uses: docker/login-action@v2.1.0 
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-      - 
         name: Checkout repository
         uses: actions/checkout@v3
       - 
@@ -55,7 +49,7 @@ jobs:
           load: true
           platforms: linux/amd64
           tags: simple-monerod:alpine-amd64
-          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/simple-monerod:latest
+          cache-from: type=registry,ref=ghcr.io/bspwr/simple-monerod:latest
           cache-to: type=inline
       - 
         name: Test-run x86_64 image
@@ -65,20 +59,18 @@ jobs:
           sleep 60
           kill -SIGINT $PID # this will return a non-zero exit code if the container dies early on
       - 
-        name: Build and push to Docker Hub and GitHub Packages Docker Registry
+        name: Build and push to GitHub Packages Docker Registry
         uses: docker/build-push-action@v4.0.0
         id: docker_build_push
         with:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: |
-            ghcr.io/${{ github.repository_owner }}/simple-monerod:latest
-            ghcr.io/${{ github.repository_owner }}/simple-monerod:${{ steps.get_tag.outputs.tag }}
-            ${{ secrets.DOCKER_USERNAME }}/simple-monerod:latest
-            ${{ secrets.DOCKER_USERNAME }}/simple-monerod:${{ steps.get_tag.outputs.tag }}
+            ghcr.io/bspwr/simple-monerod:latest
+            ghcr.io/bspwr/simple-monerod:${{ steps.get_tag.outputs.tag }}
           labels: |
             org.opencontainers.image.source=${{ github.event.repository.html_url }}
             org.opencontainers.image.created=${{ steps.prep.outputs.created }}
             org.opencontainers.image.revision=${{ github.sha }}
-          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/simple-monerod:latest
+          cache-from: type=registry,ref=ghcr.io/bspwr/simple-monerod:latest
           cache-to: type=inline

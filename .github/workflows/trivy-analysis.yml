@@ -25,12 +25,12 @@ jobs:
         with:
           push: false
           load: true
-          tags: sethforprivacy/simple-monerod:alpine
+          tags: bspwr/simple-monerod:alpine
       - 
         name: Run Trivy vulnerability scanner against Alpine image
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'sethforprivacy/simple-monerod:alpine'
+          image-ref: 'bspwr/simple-monerod:alpine'
           format: 'template'
           template: '@/contrib/sarif.tpl'
           output: 'trivy-results.sarif'
